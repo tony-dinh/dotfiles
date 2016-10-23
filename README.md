@@ -4,9 +4,11 @@ This repository exists to provide a more portable and structured way of maintain
 Inspired by [Zach Holman](https://github.com/holman/dotfiles).
 
 ## Prerequisites
-The configurations and aliases are developed assuming [zsh](https://en.wikipedia.org/wiki/Z_shell) as the command interpreter. Without it, the files themselves are be pretty obscelete as is 🙊.
+The configurations and aliases are developed assuming [zsh](https://en.wikipedia.org/wiki/Z_shell) as the command interpreter. Without it, the files themselves will be pretty obscelete as is 🙊.
 
 ## Getting Started
 Clone the repository and run the `setup.sh` script located in the `scripts` folder.
 
-The script will make a symbolic link to all the dotfiles in this repository and the project itself in the `$HOME` directory.
+The script will make a dotfile symbolic link to all the files containing a `.symlink` extension in this repository and the project itself in the `$HOME` directory.
+
+**NOTE:** `.zshrc` is responsible for loading files containing the `.zsh` extension into the environment.
