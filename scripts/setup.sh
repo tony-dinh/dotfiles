@@ -60,6 +60,10 @@ success () {
   printf "\r\033[2K [ \033[00;32mOK\033[0m ] $1\n"
 }
 
+warn () {
+  printf "\r [ \033[00;34m!!\033[0m ] $1\n"
+}
+
 fail () {
   printf "\r\033[2K [\033[0;31mFAIL\033[0m] $1\n"
   echo ''
@@ -77,32 +81,43 @@ directory_exists () {
 
 link_project () {
     local src=$1 dst=${2}/.$(basename $DOT_ROOT)
+    local overwrite= skip= backup=
+    local response="x"
 
-    info "🔗  Creating a symbolic link at the ROOT ..."
+    info "🔗  Creating a symbolic link in the HOME directory ..."
     if directory_exists $dst; then
-        user "   ↳ '$dst' already exists! Overwrite? [y]/[n]"
-        read -n 1 response
-        echo ''
-        if [[ $response =~ ^[^Yy]$ ]]; then
-            info "👋  ↳ Resolve this issue and try again later."
-            exit
-        else
-            rm -rf $dst
-            if directory_exists $dst; then
-                fail "⚠️  Uh oh, something went wrong -- Exiting ..."
-                exit
-            fi
-        fi
+        warn "   ↳ '$dst' already exists!"
+        while [[ $response =~ ^[^sob]$ ]]; do
+            user "   ↳ What do you want to do? [s]kip, [o]verwrite, [b]ackup"
+            read -n 1 response
+            echo ''
+        done
+
+        case "$response" in
+            s )
+                skip=true;;
+            o )
+                overwrite=true;;
+            b )
+                backup=true;;
+            * )
+                ;;
+        esac
     fi
 
-    ln -s $src $dst
-    if directory_exists $dst; then
+    if [ "$overwrite" == "true" ]; then
+        info "   ↳ Overwriting '$dst' ..."
+        rm -rf "$dst"
+    elif [ "$backup" == "true" ]; then
+        info "   ↳ Backing up '$dst' ..."
+        mv "$dst" "${dst}.backup"
+    elif [ "$skip" == "true" ]; then
+        success "   ↳ Skipped!"
+    fi
+
+    if [ "skip" != "true" ]; then
+        ln -s "$src" "$dst"
         success "🍻  Successfully linked '$dst'!"
-        echo ''
-        install_dotfiles
-    else
-        fail "⚠️  Uh oh, something went wrong -- Exiting ..."
-        exit
     fi
 }
 
@@ -115,7 +130,7 @@ install_dotfiles () {
     done
 }
 
-
 if [ "$(uname -s)" == "Darwin" ]; then
     link_project $DOT_ROOT $HOME
+    install_dotfiles
 fi
