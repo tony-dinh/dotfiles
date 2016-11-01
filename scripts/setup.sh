@@ -70,22 +70,21 @@ fail () {
   exit
 }
 
-directory_exists () {
-    directory=$1
-    if [ -d $directory ]; then
+destination_exists () {
+    local dst="$1"
+    if [ -d "$dst" ] || [ -f "$dst" ]; then
         return 0
     else
         return 1
     fi
 }
 
-link_project () {
-    local src=$1 dst=${2}/.$(basename $DOT_ROOT)
-    local overwrite= skip= backup=
+link_file () {
+    local src=$1 dst=$2
+    local skip= overwrite= backup=
     local response="x"
 
-    info "🔗  Creating a symbolic link in the HOME directory ..."
-    if directory_exists $dst; then
+    if destination_exists $dst; then
         warn "   ↳ '$dst' already exists!"
         while [[ $response =~ ^[^sob]$ ]]; do
             user "   ↳ What do you want to do? [s]kip, [o]verwrite, [b]ackup"
@@ -115,22 +114,30 @@ link_project () {
         success "   ↳ Skipped!"
     fi
 
-    if [ "skip" != "true" ]; then
+    if [ "$skip" != "true" ]; then
         ln -s "$src" "$dst"
         success "🍻  Successfully linked '$dst'!"
     fi
 }
 
+link_project () {
+    local src=$1 dst=${2}/.$(basename $DOT_ROOT)
+    info "🔗  Creating a symbolic link in the HOME directory ..."
+    link_file $src $dst
+}
+
 install_dotfiles () {
+    local dst=
     for src in $(find -H "$DOT_ROOT" -maxdepth 2 -name '*.symlink' -not -path '*.git*')
     do
-        local dst="$HOME/.$(basename "${src%.*}")"
-        echo $dst
-        ln -s $src $dst
+        dst="$HOME/.$(basename "${src%.*}")"
+        link_file $src $dst
     done
 }
 
 if [ "$(uname -s)" == "Darwin" ]; then
     link_project $DOT_ROOT $HOME
+
+    info "🗂  Installing dotfiles ..."
     install_dotfiles
 fi
