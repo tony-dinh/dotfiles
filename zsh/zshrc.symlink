@@ -24,3 +24,6 @@ do
 done
 
 unset config_files
+
+export NVM_DIR="/Users/tonydinh/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
