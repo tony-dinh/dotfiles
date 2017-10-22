@@ -43,7 +43,7 @@ echo '                         ZZZZZZZZZZZZZZZZZZZZZZZZOZZ'
 echo '                               \$ZZZZZZZZZZZ\$O='
 echo ''
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")"
 DOT_ROOT=$(pwd -P)
 
 set -e
