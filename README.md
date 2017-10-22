@@ -7,7 +7,7 @@ Inspired by [Zach Holman](https://github.com/holman/dotfiles).
 The configurations and aliases are developed assuming [zsh](https://en.wikipedia.org/wiki/Z_shell) as the command interpreter. Without it, the files themselves will be pretty obscelete as is 🙊.
 
 ## Getting Started
-Clone the repository and run the `setup.sh` script located in the `scripts` folder.
+Clone the repository and run the `install.sh` script.
 
 The script will make a dotfile symbolic link to all the files containing a `.symlink` extension in this repository and the project itself in the `$HOME` directory.
 
